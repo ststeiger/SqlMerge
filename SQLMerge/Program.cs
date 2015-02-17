@@ -23,7 +23,7 @@ namespace SQLMerge
             string strFileContent = string.Empty;
             foreach (System.IO.FileInfo fiThisFile in afiSQLfiles)
             {
-                if (!System.StringComparer.InvariantCultureIgnoreCase.Equals(fiThisFile.Name, strFileName))
+                if (!System.StringComparer.InvariantCultureIgnoreCase.Equals(fiThisFile.FullName, strFileName))
                 {
                     System.Console.WriteLine("Adding content of file " + fiThisFile.Name);
                     strFileContent = GetFileContent(fiThisFile);
@@ -31,7 +31,7 @@ namespace SQLMerge
                     lsFileList.Add(strFileContent);
                 } // End if (!StringComparer.OrdinalIgnoreCase.Equals(fiThisFile.Name, strFileName))
                 else
-                    System.Console.WriteLine("Preventing the probably wrong addition of content from file \"" + strFileName + "\"");
+                    System.Console.WriteLine("Preventing the probably wrong addition of content from file \"" + fiThisFile.Name + "\"");
             } // Next fiThisFile
 
             if (System.IO.File.Exists(strFileName))
