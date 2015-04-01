@@ -11,9 +11,21 @@ namespace SQLMerge
         {
             //System.IO.Directory.GetFiles(strPath, "*.sql", System.IO.SearchOption.TopDirectoryOnly);
             System.IO.FileInfo[] afiSQLfiles = GetSqlFiles(strPath);
+            System.Collections.Generic.List<System.IO.FileInfo> afi = new System.Collections.Generic.List<System.IO.FileInfo>();
+            afi.AddRange(afiSQLfiles);
+            for (int i = afi.Count - 1; i > -1; --i)
+            {
+                bool isSoftDelete = System.Text.RegularExpressions.Regex.IsMatch(afi[i].Name, "^(x{3})+_", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                if (isSoftDelete)
+                    afi.RemoveAt(i);
+            }
+
+            afi.Sort(StringHelper.SortFileNames);
+            afiSQLfiles = afi.ToArray();
 
             // Array.Sort(afiSQLfiles);
-            System.Array.Sort(afiSQLfiles, StringHelper.SortFileNames);
+            //System.Array.Sort(afiSQLfiles, StringHelper.SortFileNames);
 
             // System.Array.Sort(afiSQLfiles, delegate(System.IO.FileInfo f1, System.IO.FileInfo f2)
             // {
@@ -50,7 +62,7 @@ namespace SQLMerge
         // SQLMerge.FileHelper.GetSqlFiles();
         internal static System.IO.FileInfo[] GetSqlFiles(string searchFolder, System.IO.SearchOption searchOption)
         {
-            string[] filters = new string[] { "sql", "psql"};
+            string[] filters = new string[] { "sql", "psql" };
             return GetFilesFrom(searchFolder, filters, searchOption);
         } // End Function GetRasterImages
 
