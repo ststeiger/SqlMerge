@@ -10,8 +10,9 @@ namespace SQLMerge
         public static void Main(string[] args)
         {
             // Test.ReplaceTestFileContent();
-
-            string strPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string strExeLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string strPath = System.IO.Path.GetDirectoryName(strExeLocation);
+            string strPathRoot = System.IO.Path.GetPathRoot(strPath);
             string strFileName = System.IO.Path.Combine(strPath, "AllInOne.sql");
 
             System.IO.FileInfo[] afiSQLfiles = FileHelper.GetSqlFilesSorted(strPath);
@@ -33,6 +34,108 @@ namespace SQLMerge
                 else
                     System.Console.WriteLine("Preventing the probably wrong addition of content from file \"" + fiThisFile.Name + "\"");
             } // Next fiThisFile
+
+
+
+            // while (System.StringComparer.InvariantCultureIgnoreCase.Equals(strPathRoot, @"P:\"))
+            while (true)
+            {
+                if (lsFileList.Count == 0)
+                    break;
+
+                string firstFile = ""; // 
+                string lastFile = "";
+                string strInsertText = "";
+
+
+                if (afiSQLfiles.Length > 0)
+                    firstFile = afiSQLfiles[0].Name;
+
+
+
+                // string strFirstFolder = @"P:\" + strPath.Split(System.IO.Path.DirectorySeparatorChar)[1];
+                string strLastFolder = (new System.IO.DirectoryInfo(strPath)).Name;
+
+                if (afiSQLfiles.Length > 1)
+                {
+                    lastFile = afiSQLfiles[lsFileList.Count - 1].Name;
+                    strInsertText = string.Format("({0}) From \"{1}\" to \"{2}\" in \"{3}\"", strLastFolder, firstFile, lastFile, strPath);
+                }
+                else
+                    strInsertText = string.Format("({0}) From \"{1}\" in \"{2}\"", strLastFolder, firstFile, strPath);
+
+
+
+
+
+
+
+                lsFileList.Add(string.Format(@"
+
+
+GO
+
+
+PRINT 'Writing entry into T_COR_Version'
+
+GO
+
+
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[T_COR_Version]') AND type in (N'U'))
+BEGIN
+EXECUTE('
+	CREATE TABLE [dbo].[T_COR_Version](
+		[CV_UID] [uniqueidentifier] NOT NULL,
+		[CV_Key] [nvarchar](200) NOT NULL,
+		[CV_Value] [nvarchar](max) NOT NULL,
+		[CV_User] [nvarchar](200) NULL,
+		[CV_Note] [nvarchar](200) NULL,
+		[CV_Date] [datetime] NOT NULL,
+		 CONSTRAINT [PK_T_COR_Version] PRIMARY KEY CLUSTERED 
+		(
+			[CV_UID] ASC
+		)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+');
+
+
+	EXECUTE('ALTER TABLE [dbo].[T_COR_Version] ADD CONSTRAINT [DF_T_COR_Version_CV_UID]  DEFAULT (newid()) FOR [CV_UID]');
+	EXECUTE('ALTER TABLE [dbo].[T_COR_Version] ADD  CONSTRAINT [DF_T_COR_Version_CV_User]  DEFAULT (suser_sname()) FOR [CV_User]');
+	EXECUTE('ALTER TABLE [dbo].[T_COR_Version] ADD  CONSTRAINT [DF_T_COR_Version_CV_Date]  DEFAULT (getdate()) FOR [CV_Date]');
+END 
+
+
+GO
+
+
+
+
+IF 0 < (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'T_COR_Version') 
+BEGIN 
+	INSERT INTO T_COR_Version(CV_Key, CV_Value) 
+	SELECT 
+		 N'SQL' AS CV_Key -- nvarchar(200) 
+		,N'{0}' AS CV_Value -- nvarchar(200) 
+	;
+END
+
+
+
+GO
+
+
+PRINT 'Finsihed Writing entry into T_COR_Version' 
+
+
+GO
+
+", strInsertText.Replace("'", "''")));
+
+                break;
+            }
+
+
 
             if (System.IO.File.Exists(strFileName))
                 System.IO.File.Delete(strFileName);
