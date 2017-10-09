@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>merge.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -42,6 +45,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppCode\StringHelper.cs" />
     <Compile Include="AppCode\Test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icons\merge.ico" />
+    <Content Include="icons\Merge_Icons.png" />
+    <Content Include="merge.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\merge_icon.pptx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
