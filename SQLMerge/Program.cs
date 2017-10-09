@@ -66,9 +66,7 @@ namespace SQLMerge
 
 
 
-
-
-
+#if WITH_T_COR_Version 
 
                 lsFileList.Add(string.Format(@"
 
@@ -131,6 +129,8 @@ PRINT 'Finsihed Writing entry into T_COR_Version'
 GO
 
 ", strInsertText.Replace("'", "''")));
+#endif
+
 
                 break;
             }
