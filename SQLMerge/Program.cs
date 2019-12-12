@@ -1,4 +1,7 @@
 ﻿
+// #define WITH_T_COR_Version
+
+
 namespace SQLMerge
 {
 
