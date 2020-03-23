@@ -37,7 +37,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>merge.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,7 +53,11 @@
     <Compile Include="AppCode\Test.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="merge.ico" />
+    <Content Include="icons\merge.ico" />
+    <Content Include="icons\Merge_Icons.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\merge_icon.pptx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
