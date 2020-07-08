@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppCode\FileHelper.cs" />
+    <Compile Include="Encoding.cs" />
+    <Compile Include="ExtensionAttribute.cs" />
+    <Compile Include="lalalla.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppCode\StringHelper.cs" />
@@ -52,6 +55,7 @@
     <Content Include="merge.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="icons\Alphabets.xlsx" />
     <None Include="icons\merge_icon.pptx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

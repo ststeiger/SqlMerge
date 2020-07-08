@@ -10,7 +10,65 @@ namespace SQLMerge
     {
 
 
+        // https://github.com/AutoItConsulting/text-encoding-detect/blob/master/TextEncodingDetect-C%23/TextEncodingDetect/TextEncodingDetect.cs
         public static void Main(string[] args)
+        {
+            string TESTSTRING = null;
+            string testString = "Hello äöüÄÖÜ";
+            testString = "abcäáàâëéèêïíìîöóòôüúùÿñçşğıiœææøåß";
+            TESTSTRING = "ABCÄÁÀÂËÉÈÊÏÍÌÎÖÓÒÔÜÚÙŸÑÇŞĞIIŒÆÆØÅSS";
+
+
+
+            System.Text.Encoding enc = System.Text.Encoding.GetEncoding("iso-8859-1");
+            System.Text.Encoding enc2 = new System.Text.UTF8Encoding(false);
+            // decode[7]   65533 '�'   char
+
+            enc = new System.Text.UTF8Encoding(false);
+            enc2 = System.Text.Encoding.GetEncoding("iso-8859-1");
+            // decode[6]   195 'Ã' char
+            // decode[7]   164 '¤' char
+            // decode[8]   195 'Ã' char
+
+
+            byte[] bytes = enc.GetBytes(testString);
+            string decode =  enc2.GetString(bytes);
+            System.Console.WriteLine(decode);
+
+
+        }
+
+
+        /// <summary>
+        /// Detects the byte order mark of a file and returns
+        /// an appropriate encoding for the file.
+        /// </summary>
+        /// <param name="srcFile"></param>
+        /// <returns></returns>
+        public static System.Text.Encoding GetFileEncoding(string srcFile)
+        {
+            // *** Use Default of Encoding.Default (Ansi CodePage)
+            System.Text.Encoding enc = System.Text.Encoding.Default;
+
+            // *** Detect byte order mark if any - otherwise assume default
+            byte[] buffer = new byte[5];
+            System.IO.FileStream file = new System.IO.FileStream(srcFile, System.IO.FileMode.Open);
+            file.Read(buffer, 0, 5);
+            file.Close();
+
+            if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
+                enc = System.Text.Encoding.UTF8;
+            else if (buffer[0] == 0xfe && buffer[1] == 0xff)
+                enc = System.Text.Encoding.Unicode;
+            else if (buffer[0] == 0 && buffer[1] == 0 && buffer[2] == 0xfe && buffer[3] == 0xff)
+                enc = System.Text.Encoding.UTF32;
+            else if (buffer[0] == 0x2b && buffer[1] == 0x2f && buffer[2] == 0x76)
+                enc = System.Text.Encoding.UTF7;
+            return enc;
+        }
+
+
+        public static void Merge()
         {
             // Test.ReplaceTestFileContent();
             string strExeLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
