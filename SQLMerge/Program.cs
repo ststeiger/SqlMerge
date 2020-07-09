@@ -2,6 +2,9 @@
 // #define WITH_T_COR_Version
 
 
+using System.Collections.Generic;
+using UtfUnknown;
+
 namespace SQLMerge
 {
 
@@ -13,6 +16,16 @@ namespace SQLMerge
         // https://github.com/AutoItConsulting/text-encoding-detect/blob/master/TextEncodingDetect-C%23/TextEncodingDetect/TextEncodingDetect.cs
         public static void Main(string[] args)
         {
+            using (System.IO.Stream strm = System.IO.File.OpenRead("/etc/hosts"))
+            {
+                DetectionResult detect = UtfUnknown.CharsetDetector.DetectFromStream(strm);
+                System.Console.WriteLine(detect);
+            }
+
+
+            
+            
+            
             string TESTSTRING = null;
             string testString = "Hello äöüÄÖÜ";
             testString = "abcäáàâëéèêïíìîöóòôüúùÿñçşğıiœææøåß";
