@@ -26,7 +26,7 @@ namespace SQLMerge
             string strPath = System.IO.Path.GetDirectoryName(strExeLocation);
             string strPathRoot = System.IO.Path.GetPathRoot(strPath);
 
-            Merge(strPathRoot);
+            Merge(strPath);
         }
 
 
@@ -186,7 +186,10 @@ GO
                         // Read contents of file into a string
                         fileContent = tr.ReadToEnd();
                         // Remove the newlines when created using sp_RPT_DEBUG_PrintVarcharMax 
-                        fileContent.Replace("#@NEW@#_@#LINE@#\r\n", "");
+                        fileContent = fileContent.Replace("#@NEW@#_@#LINE@#\r\n", "");
+                        fileContent = fileContent.Replace("#@NEW@#_@#LINE@#\n", "");
+                        fileContent = fileContent.Replace("\r\n", "\n");
+                        fileContent = fileContent.Replace("\n", "\r\n");
                     } // End Using tr 
 
                 } // End using fsReadFile
