@@ -1,5 +1,5 @@
 ﻿
-#define WITH_T_COR_Version
+// #define WITH_T_COR_Version
 
 
 namespace SQLMerge

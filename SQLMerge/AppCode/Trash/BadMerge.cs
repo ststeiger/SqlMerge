@@ -16,6 +16,36 @@ namespace SQLMerge
         }
 
 
+        // https://www.gaijin.at/en/infos/ascii-ansi-character-table#:~:text=Overview,the%20unchanged%20ASCII%20character%20set.
+        public static void BrokenEncoding()
+        {
+            // https://stackoverflow.com/questions/700187/unicode-utf-ascii-ansi-format-differences
+
+            System.Text.Encoding enc = System.Text.Encoding.GetEncoding("iso-8859-1");
+
+            string fileName = @"D:\username\Documents\Visual Studio 2017\GitLab\COR-Basic-V4\Portal\Portal_Share\0\VWS.Legend.Load.sql";
+
+            string content = System.IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8);
+
+            // Text encoded as iso
+            byte[] bca = enc.GetBytes(content);
+            // text wrongly decoded as utf8 
+            content = new System.Text.UTF8Encoding(false).GetString(bca);
+
+
+            // expected reversal 
+            // bca = new System.Text.UTF8Encoding(false).GetBytes(content);
+            // content = enc.GetString(bca);
+
+
+            // This happens on browser:
+            bca = enc.GetBytes(content);
+            content = new System.Text.UTF8Encoding(false).GetString(bca);
+
+            System.Console.WriteLine(content);
+        }
+
+
         public static void TestEncodingQuirks()
         {
             string TESTSTRING = null;
