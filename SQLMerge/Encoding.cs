@@ -3,7 +3,7 @@ namespace SQLMerge
 {
 
 
-    class EncodingDetector 
+    class EncodingDetector
     {
 
 
@@ -13,7 +13,7 @@ namespace SQLMerge
         /// <param name="fileName"></param>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public static System.Text.Encoding DetectEncoding(string fileName, out string contents)
+        public static System.Text.Encoding DetectEncodingWithStreamReader(string fileName, out string contents)
         {
             // open the file with the stream-reader:
             using (System.IO.StreamReader reader = new System.IO.StreamReader(fileName, true))
@@ -27,168 +27,216 @@ namespace SQLMerge
         }
 
 
-        public static void foo(string filename)
+        public static System.Text.Encoding BomInfo(string srcFile)
         {
+            return BomInfo(srcFile, false);
+        } // End Function BomInfo 
 
 
+        public static System.Text.Encoding BomInfo(string srcFile, bool thorough)
+        {
+            byte[] b = new byte[5];
+
+            using (System.IO.FileStream file = new System.IO.FileStream(srcFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
+            {
+                int numRead = file.Read(b, 0, 5);
+                if (numRead < 5)
+                    System.Array.Resize(ref b, numRead);
+
+                file.Close();
+            } // End Using file 
+
+            if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF)
+                return System.Text.Encoding.GetEncoding("utf-32BE"); // UTF-32, big-endian 
+            else if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00)
+                return System.Text.Encoding.UTF32; // UTF-32, little-endian
+            else if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF)
+                return System.Text.Encoding.BigEndianUnicode; // UTF-16, big-endian
+            else if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE)
+                return System.Text.Encoding.Unicode; // UTF-16, little-endian
+            else if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF)
+                return System.Text.Encoding.UTF8;  // UTF-8
+            else if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76)
+                return System.Text.Encoding.UTF7;  // UTF-7
+
+
+            // Maybe there is a future encoding ...
+            // PS: The above yields more than this - this doesn't find UTF7 ...
+            if (thorough)
+            {
+                foreach (System.Text.EncodingInfo ei in System.Text.Encoding.GetEncodings())
+                {
+                    System.Text.Encoding enc = ei.GetEncoding();
+
+                    byte[] preamble = enc.GetPreamble();
+                    if (preamble.Length == 0)
+                        continue;
+
+                    if (preamble.Length > b.Length)
+                        continue;
+
+                    for (int i = 0; i < preamble.Length; ++i)
+                    {
+                        if (b[i] != preamble[i])
+                        {
+                            goto NextEncoding;
+                        }
+                    } // Next i 
+
+                    return enc;
+                NextEncoding:
+                    continue;
+                } // Next ei
+            } // End if (thorough)
+
+            return null;
+        } // End Function BomInfo 
+
+
+        public static System.Text.Encoding DetectOrGuessEncoding(string fileName)
+        {
+            return DetectOrGuessEncoding(fileName, false);
+        }
+
+
+        public static System.Text.Encoding DetectOrGuessEncoding(string fileName, bool withOutput)
+        {
+            if (!System.IO.File.Exists(fileName))
+                return null;
+
+
+            System.ConsoleColor origBack = System.ConsoleColor.Black;
+            System.ConsoleColor origFore = System.ConsoleColor.White;
             
 
-
-
-            byte[] bytes = System.IO.File.ReadAllBytes(filename);
-            System.Text.Encoding encoding = null;
-            string text = null;
-            // Test UTF8 with BOM. This check can easily be copied and adapted
-            // to detect many other encodings that use BOMs.
-            System.Text.UTF8Encoding encUtf8Bom = new System.Text.UTF8Encoding(true, true);
-            bool couldBeUtf8 = true;
-            byte[] preamble = encUtf8Bom.GetPreamble();
-            int prLen = preamble.Length;
-            if (bytes.Length >= prLen && preamble.SequenceEqual(bytes.Take(prLen)))
+            if (withOutput)
             {
-                // UTF8 BOM found; use encUtf8Bom to decode.
-                try
+                origBack = System.Console.BackgroundColor;
+                origFore = System.Console.ForegroundColor;
+            }
+            
+            // System.Text.Encoding systemEncoding = System.Text.Encoding.Default; // Returns hard-coded UTF8 on .NET Core ... 
+            System.Text.Encoding systemEncoding = GetSystemEncoding();
+            System.Text.Encoding enc = BomInfo(fileName);
+            if (enc != null)
+            {
+                if (withOutput)
                 {
-                    // Seems that despite being an encoding with preamble,
-                    // it doesn't actually skip said preamble when decoding...
-                    text = encUtf8Bom.GetString(bytes, prLen, bytes.Length - prLen);
-                    encoding = encUtf8Bom;
+                    System.Console.BackgroundColor = System.ConsoleColor.Green;
+                    System.Console.ForegroundColor = System.ConsoleColor.White;
+                    System.Console.WriteLine(fileName);
+                    System.Console.WriteLine(enc);
+                    System.Console.BackgroundColor = origBack;
+                    System.Console.ForegroundColor = origFore;
                 }
-                catch (System.ArgumentException)
+
+                return enc;
+            }
+
+            using (System.IO.Stream strm = System.IO.File.OpenRead(fileName))
+            {
+                UtfUnknown.DetectionResult detect = UtfUnknown.CharsetDetector.DetectFromStream(strm);
+
+                if (detect != null && detect.Details != null && detect.Details.Count > 0 && detect.Details[0].Confidence < 1)
                 {
-                    // Confirmed as not UTF-8!
-                    couldBeUtf8 = false;
-                }
-            }
-            // use boolean to skip this if it's already confirmed as incorrect UTF-8 decoding.
-            if (couldBeUtf8 && encoding == null)
-            {
-                // test UTF-8 on strict encoding rules. Note that on pure ASCII this will
-                // succeed as well, since valid ASCII is automatically valid UTF-8.
-                System.Text.UTF8Encoding encUtf8NoBom = new System.Text.UTF8Encoding(false, true);
-                try
-                {
-                    text = encUtf8NoBom.GetString(bytes);
-                    encoding = encUtf8NoBom;
-                }
-                catch (System.ArgumentException)
-                {
-                    // Confirmed as not UTF-8!
-                }
-            }
-            // fall back to default ANSI encoding.
-            if (encoding == null)
-            {
-                encoding = System.Text.Encoding.GetEncoding(1252);
-                text = encoding.GetString(bytes);
-            }
-
-        } // End Sub 
-
-
-
-
-
-        // https://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp
-
-        // Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little
-        // & big endian), and local default codepage, and potentially other codepages.
-        // 'taster' = number of bytes to check of the file (to save processing). Higher
-        // value is slower, but more reliable (especially UTF-8 with special characters
-        // later on may appear to be ASCII initially). If taster = 0, then taster
-        // becomes the length of the file (for maximum reliability). 'text' is simply
-        // the string with the discovered encoding applied to the file.
-        public System.Text.Encoding detectTextEncoding(string filename, out string text, int taster = 1000)
-        {
-            byte[] b = System.IO.File.ReadAllBytes(filename);
-
-            //////////////// First check the low hanging fruit by checking if a
-            //////////////// BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
-            if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF) { text = System.Text.Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4); return System.Text.Encoding.GetEncoding("utf-32BE"); }  // UTF-32, big-endian 
-            else if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00) { text = System.Text.Encoding.UTF32.GetString(b, 4, b.Length - 4); return System.Text.Encoding.UTF32; }    // UTF-32, little-endian
-            else if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF) { text = System.Text.Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2); return System.Text.Encoding.BigEndianUnicode; }     // UTF-16, big-endian
-            else if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE) { text = System.Text.Encoding.Unicode.GetString(b, 2, b.Length - 2); return System.Text.Encoding.Unicode; }              // UTF-16, little-endian
-            else if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF) { text = System.Text.Encoding.UTF8.GetString(b, 3, b.Length - 3); return System.Text.Encoding.UTF8; } // UTF-8
-            else if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76) { text = System.Text.Encoding.UTF7.GetString(b, 3, b.Length - 3); return System.Text.Encoding.UTF7; } // UTF-7
-
-
-            //////////// If the code reaches here, no BOM/signature was found, so now
-            //////////// we need to 'taste' the file to see if can manually discover
-            //////////// the encoding. A high taster value is desired for UTF-8
-            if (taster == 0 || taster > b.Length) taster = b.Length;    // Taster size can't be bigger than the filesize obviously.
-
-
-            // Some text files are encoded in UTF8, but have no BOM/signature. Hence
-            // the below manually checks for a UTF8 pattern. This code is based off
-            // the top answer at: https://stackoverflow.com/questions/6555015/check-for-invalid-utf8
-            // For our purposes, an unnecessarily strict (and terser/slower)
-            // implementation is shown at: https://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
-            // For the below, false positives should be exceedingly rare (and would
-            // be either slightly malformed UTF-8 (which would suit our purposes
-            // anyway) or 8-bit extended ASCII/UTF-16/32 at a vanishingly long shot).
-            int i = 0;
-            bool utf8 = false;
-            while (i < taster - 4)
-            {
-                if (b[i] <= 0x7F) { i += 1; continue; }     // If all characters are below 0x80, then it is valid UTF8, but UTF8 is not 'required' (and therefore the text is more desirable to be treated as the default codepage of the computer). Hence, there's no "utf8 = true;" code unlike the next three checks.
-                if (b[i] >= 0xC2 && b[i] <= 0xDF && b[i + 1] >= 0x80 && b[i + 1] < 0xC0) { i += 2; utf8 = true; continue; }
-                if (b[i] >= 0xE0 && b[i] <= 0xF0 && b[i + 1] >= 0x80 && b[i + 1] < 0xC0 && b[i + 2] >= 0x80 && b[i + 2] < 0xC0) { i += 3; utf8 = true; continue; }
-                if (b[i] >= 0xF0 && b[i] <= 0xF4 && b[i + 1] >= 0x80 && b[i + 1] < 0xC0 && b[i + 2] >= 0x80 && b[i + 2] < 0xC0 && b[i + 3] >= 0x80 && b[i + 3] < 0xC0) { i += 4; utf8 = true; continue; }
-                utf8 = false; break;
-            }
-            if (utf8 == true)
-            {
-                text = System.Text.Encoding.UTF8.GetString(b);
-                return System.Text.Encoding.UTF8;
-            }
-
-
-            // The next check is a heuristic attempt to detect UTF-16 without a BOM.
-            // We simply look for zeroes in odd or even byte places, and if a certain
-            // threshold is reached, the code is 'probably' UF-16.          
-            double threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
-            int count = 0;
-            for (int n = 0; n < taster; n += 2) if (b[n] == 0) count++;
-            if (((double)count) / taster > threshold) { text = System.Text.Encoding.BigEndianUnicode.GetString(b); return System.Text.Encoding.BigEndianUnicode; }
-            count = 0;
-            for (int n = 1; n < taster; n += 2) if (b[n] == 0) count++;
-            if (((double)count) / taster > threshold) { text = System.Text.Encoding.Unicode.GetString(b); return System.Text.Encoding.Unicode; } // (little-endian)
-
-
-            // Finally, a long shot - let's see if we can find "charset=xyz" or
-            // "encoding=xyz" to identify the encoding:
-            for (int n = 0; n < taster - 9; n++)
-            {
-                if (
-                    ((b[n + 0] == 'c' || b[n + 0] == 'C') && (b[n + 1] == 'h' || b[n + 1] == 'H') && (b[n + 2] == 'a' || b[n + 2] == 'A') && (b[n + 3] == 'r' || b[n + 3] == 'R') && (b[n + 4] == 's' || b[n + 4] == 'S') && (b[n + 5] == 'e' || b[n + 5] == 'E') && (b[n + 6] == 't' || b[n + 6] == 'T') && (b[n + 7] == '=')) ||
-                    ((b[n + 0] == 'e' || b[n + 0] == 'E') && (b[n + 1] == 'n' || b[n + 1] == 'N') && (b[n + 2] == 'c' || b[n + 2] == 'C') && (b[n + 3] == 'o' || b[n + 3] == 'O') && (b[n + 4] == 'd' || b[n + 4] == 'D') && (b[n + 5] == 'i' || b[n + 5] == 'I') && (b[n + 6] == 'n' || b[n + 6] == 'N') && (b[n + 7] == 'g' || b[n + 7] == 'G') && (b[n + 8] == '='))
-                    )
-                {
-                    if (b[n + 0] == 'c' || b[n + 0] == 'C') n += 8; else n += 9;
-                    if (b[n] == '"' || b[n] == '\'') n++;
-                    int oldn = n;
-                    while (n < taster && (b[n] == '_' || b[n] == '-' || (b[n] >= '0' && b[n] <= '9') || (b[n] >= 'a' && b[n] <= 'z') || (b[n] >= 'A' && b[n] <= 'Z')))
-                    { n++; }
-                    byte[] nb = new byte[n - oldn];
-                    System.Array.Copy(b, oldn, nb, 0, n - oldn);
-                    try
+                    if (withOutput)
                     {
-                        string internalEnc = System.Text.Encoding.ASCII.GetString(nb);
-                        text = System.Text.Encoding.GetEncoding(internalEnc).GetString(b);
-                        return System.Text.Encoding.GetEncoding(internalEnc);
+                        System.Console.BackgroundColor = System.ConsoleColor.Red;
+                        System.Console.ForegroundColor = System.ConsoleColor.White;
+                        System.Console.WriteLine(fileName);
+                        System.Console.WriteLine(detect);
+                        System.Console.BackgroundColor = origBack;
+                        System.Console.ForegroundColor = origFore;
                     }
-                    catch { break; }    // If C# doesn't recognize the name of the encoding, break.
+
+                    foreach (UtfUnknown.DetectionDetail detail in detect.Details)
+                    {
+                        if (detail.Encoding == systemEncoding)
+                            return detail.Encoding;
+                    }
+
+                    return detect.Details[0].Encoding;
+                }
+                else if (detect != null && detect.Details != null && detect.Details.Count > 0)
+                {
+                    if (withOutput)
+                    {
+                        System.Console.BackgroundColor = System.ConsoleColor.Green;
+                        System.Console.ForegroundColor = System.ConsoleColor.White;
+                        System.Console.WriteLine(fileName);
+                        System.Console.WriteLine(detect);
+                        System.Console.BackgroundColor = origBack;
+                        System.Console.ForegroundColor = origFore;
+                    }
+
+                    return detect.Details[0].Encoding;
+                }
+
+                enc = GetSystemEncoding();
+
+                if (withOutput)
+                {
+                    System.Console.BackgroundColor = System.ConsoleColor.DarkRed;
+                    System.Console.ForegroundColor = System.ConsoleColor.Yellow;
+                    System.Console.WriteLine(fileName);
+                    System.Console.Write("Assuming ");
+                    System.Console.Write(enc.WebName);
+                    System.Console.WriteLine("...");
+                    System.Console.BackgroundColor = origBack;
+                    System.Console.ForegroundColor = origFore;
+                }
+
+                return systemEncoding;
+            } // End Using strm 
+
+        } // End Function DetectOrGuessEncoding 
+
+
+        public static System.Text.Encoding GetSystemEncoding()
+        {
+            // The OEM code page for use by legacy console applications
+            // int oem = System.Globalization.CultureInfo.CurrentCulture.TextInfo.OEMCodePage;
+
+            // The ANSI code page for use by legacy GUI applications
+            // int ansi = System.Globalization.CultureInfo.InstalledUICulture.TextInfo.ANSICodePage; // Machine 
+            int ansi = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ANSICodePage; // User 
+
+            try
+            {
+                // https://stackoverflow.com/questions/38476796/how-to-set-net-core-in-if-statement-for-compilation
+#if ( NETSTANDARD && !NETSTANDARD1_0 )  || NETCORE || NETCOREAPP3_0 || NETCOREAPP3_1 
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
+
+                System.Text.Encoding enc = System.Text.Encoding.GetEncoding(ansi);
+                return enc;
+            }
+            catch (System.Exception)
+            { }
+
+
+            try
+            {
+
+                foreach (System.Text.EncodingInfo ei in System.Text.Encoding.GetEncodings())
+                {
+                    System.Text.Encoding e = ei.GetEncoding();
+
+                    // 20'127: US-ASCII 
+                    if (e.WindowsCodePage == ansi && e.CodePage != 20127)
+                    {
+                        return e;
+                    }
+
                 }
             }
+            catch (System.Exception)
+            { }
 
+            // return System.Text.Encoding.GetEncoding("iso-8859-1");
+            return System.Text.Encoding.UTF8;
+        } // End Function GetSystemEncoding 
 
-            // If all else fails, the encoding is probably (though certainly not
-            // definitely) the user's local codepage! One might present to the user a
-            // list of alternative encodings as shown here: https://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
-            // A full list can be found using Encoding.GetEncodings();
-            text = System.Text.Encoding.Default.GetString(b);
-            return System.Text.Encoding.Default;
-        }
 
     } // End Class 
 

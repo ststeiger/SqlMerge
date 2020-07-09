@@ -62,7 +62,7 @@ namespace UtfUnknown
                 details[i] = Details[i].ToString();
             }
             
-            return $"{nameof(Detected)}: {Detected}, \n{nameof(Details)}:\n - {string.Join("\n- ", details)}";
+            return $"{nameof(Detected)}: {Detected}, \n{nameof(Details)}:\n - {string.Join("\n - ", details)}";
         }
         
         

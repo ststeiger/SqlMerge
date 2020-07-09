@@ -8,12 +8,17 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "UtfUnknown", "UtfUnknown\UtfUnknown.shproj", "{50F98BAD-02B6-4430-8A66-E6552116CA85}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		UtfUnknown\UtfUnknown.projitems*{0387f107-a19a-4587-82a3-703bd9daecc8}*SharedItemsImports = 4
+		UtfUnknown\UtfUnknown.projitems*{50f98bad-02b6-4430-8a66-e6552116ca85}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0387F107-A19A-4587-82A3-703BD9DAECC8}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0387F107-A19A-4587-82A3-703BD9DAECC8}.Debug|Any CPU.Build.0 = Debug|x86
 		{0387F107-A19A-4587-82A3-703BD9DAECC8}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
