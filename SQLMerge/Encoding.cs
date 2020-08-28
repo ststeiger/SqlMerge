@@ -114,9 +114,11 @@ namespace SQLMerge
                 origBack = System.Console.BackgroundColor;
                 origFore = System.Console.ForegroundColor;
             }
-            
+
             // System.Text.Encoding systemEncoding = System.Text.Encoding.Default; // Returns hard-coded UTF8 on .NET Core ... 
             System.Text.Encoding systemEncoding = GetSystemEncoding();
+            System.Text.Encoding utf8Encoding = System.Text.Encoding.UTF8;
+
             System.Text.Encoding enc = BomInfo(fileName);
             if (enc != null)
             {
@@ -151,7 +153,7 @@ namespace SQLMerge
 
                     foreach (UtfUnknown.DetectionDetail detail in detect.Details)
                     {
-                        if (detail.Encoding == systemEncoding)
+                        if (detail.Encoding == utf8Encoding || detail.Encoding == systemEncoding)
                             return detail.Encoding;
                     }
 

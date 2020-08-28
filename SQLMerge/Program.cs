@@ -10,9 +10,24 @@ namespace SQLMerge
     {
 
 
+        public static void Test()
+        {
+            string file = @"P:\COR_Basic\Release\V4\v401\331_Anpassungen auf Grund von JB.sql";
+            System.Text.Encoding enc = EncodingDetector.DetectOrGuessEncoding(file);
+            System.IO.File.ReadAllText(file, enc);
+
+            System.Console.Write("File \"");
+            System.Console.Write(file);
+            System.Console.Write("\" - Detected Encoding ");
+            System.Console.WriteLine(enc.WebName);
+
+        }
+
+
         // https://github.com/AutoItConsulting/text-encoding-detect/blob/master/TextEncodingDetect-C%23/TextEncodingDetect/TextEncodingDetect.cs
         public static void Main(string[] args)
         {
+            // Test();
             Merge();
 
             System.Console.WriteLine(System.Environment.NewLine);
