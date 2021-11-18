@@ -111,7 +111,7 @@ namespace SQLMerge
                     } // Next i 
 
                     return lsPreambles[j].Key;
-                NEXT_J_AND_NOT_NEXT_I: continue;
+                NEXT_J_AND_NOT_NEXT_I: continue; // can't have label without statement...
                 } // Next j 
 
             } // End if (thorough)
