@@ -50,7 +50,7 @@ namespace SQLMerge
                 return System.Text.Encoding.GetEncoding("utf-32BE"); // UTF-32, big-endian 
             else if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00) // UTF32-LE
                 return System.Text.Encoding.UTF32; // UTF-32, little-endian
-                                                   // https://en.wikipedia.org/wiki/Byte_order_mark#cite_note-14    
+            // https://en.wikipedia.org/wiki/Byte_order_mark#cite_note-14    
             else if (b.Length >= 4 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76 && (b[3] == 0x38 || b[3] == 0x39 || b[3] == 0x2B || b[3] == 0x2F)) // UTF7
                 return System.Text.Encoding.UTF7;  // UTF-7
             else if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF) // UTF-8
