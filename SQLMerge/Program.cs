@@ -1,4 +1,4 @@
-﻿// #define WITH_AFTER_MERGE 
+﻿#define WITH_AFTER_MERGE 
 // #define WITH_T_COR_Version
 
 

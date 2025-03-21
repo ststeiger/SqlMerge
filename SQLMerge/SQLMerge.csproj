@@ -61,6 +61,10 @@
     <Content Include="icons\merge.ico" />
     <Content Include="icons\Merge_Icons.png" />
     <Content Include="merge.ico" />
+    <Content Include="Versioning\cor_version.sql" />
+    <Content Include="Versioning\new_table.sql" />
+    <Content Include="Versioning\sp_add.sql" />
+    <Content Include="Versioning\sp_add_content.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\Alphabets.xlsx" />
