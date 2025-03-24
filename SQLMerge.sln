@@ -1,17 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLMerge", "SQLMerge\SQLMerge.csproj", "{0387F107-A19A-4587-82A3-703BD9DAECC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OldSQLMerge", "OldSQLMerge\OldSQLMerge.csproj", "{0387F107-A19A-4587-82A3-703BD9DAECC8}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "UtfUnknown", "UtfUnknown\UtfUnknown.shproj", "{50F98BAD-02B6-4430-8A66-E6552116CA85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlMerge", "SqlMerge\SqlMerge.csproj", "{857E3CA9-1D91-4E08-9ADE-7FEC1EB426CB}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		UtfUnknown\UtfUnknown.projitems*{0387f107-a19a-4587-82a3-703bd9daecc8}*SharedItemsImports = 4
-		UtfUnknown\UtfUnknown.projitems*{50f98bad-02b6-4430-8a66-e6552116ca85}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -21,11 +19,20 @@ Global
 		{0387F107-A19A-4587-82A3-703BD9DAECC8}.Debug|Any CPU.Build.0 = Debug|x86
 		{0387F107-A19A-4587-82A3-703BD9DAECC8}.Release|Any CPU.ActiveCfg = Release|x86
 		{0387F107-A19A-4587-82A3-703BD9DAECC8}.Release|Any CPU.Build.0 = Release|x86
+		{857E3CA9-1D91-4E08-9ADE-7FEC1EB426CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857E3CA9-1D91-4E08-9ADE-7FEC1EB426CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857E3CA9-1D91-4E08-9ADE-7FEC1EB426CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857E3CA9-1D91-4E08-9ADE-7FEC1EB426CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {182D7A40-C7D6-44C9-89A8-1B3AFCF88BD0}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		UtfUnknown\UtfUnknown.projitems*{0387f107-a19a-4587-82a3-703bd9daecc8}*SharedItemsImports = 4
+		UtfUnknown\UtfUnknown.projitems*{50f98bad-02b6-4430-8a66-e6552116ca85}*SharedItemsImports = 13
+		UtfUnknown\UtfUnknown.projitems*{857e3ca9-1d91-4e08-9ade-7fec1eb426cb}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
