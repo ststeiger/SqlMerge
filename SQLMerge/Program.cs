@@ -28,6 +28,7 @@ namespace SQLMerge
         public static void Main(string[] args)
         {
             // Test();
+            // Example.Test();
             Merge();
 
             System.Console.WriteLine(System.Environment.NewLine);
@@ -42,6 +43,25 @@ namespace SQLMerge
             string strPathRoot = System.IO.Path.GetPathRoot(strPath);
 
             Merge(strPath);
+        }
+
+
+
+        private static int? GetSortNumber(string fileName)
+        {
+            int? result = null;
+
+            System.Text.RegularExpressions.Match ma = System.Text.RegularExpressions.Regex.Match(fileName, @"^\d+");
+            if (ma.Success)
+            {
+                try
+                {
+                    result = int.Parse(ma.Value, System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch { }
+            }
+
+            return result;
         }
 
 
@@ -64,6 +84,9 @@ namespace SQLMerge
                     return;
                 }
 
+
+
+
 #if WITH_T_COR_Version
                 string strLastFolder = (new System.IO.DirectoryInfo(strPath)).Name;
                 string firstFile = fileInfos[0].Name;
@@ -85,6 +108,9 @@ namespace SQLMerge
                         {
                             if (System.StringComparer.InvariantCultureIgnoreCase.Equals(file.FullName, mergeFileName))
                                 continue;
+
+
+                            int? sortNumber = GetSortNumber(file.Name);
 
 
                             System.Text.Encoding enc = EncodingDetector.DetectOrGuessEncoding(file.FullName);
