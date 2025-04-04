@@ -1,4 +1,4 @@
-﻿// #define WITH_AFTER_MERGE 
+﻿#define WITH_AFTER_MERGE 
 // #define WITH_T_COR_Version
 
 
@@ -99,9 +99,10 @@ namespace SQLMerge
 
 #if WITH_AFTER_MERGE
                         tw.Write(@"
-if exists(select * from sys.objects where object_id = object_id(N'[stp_COR_afterSQLMerge]') and type in (N'P', N'PC')) begin
-	execute [dbo].[stp_COR_afterSQLMerge] '<SQL><![CDATA[0001_basicLink.sql"" in ""P:\COR_Basic\Release\V4\v404 (CAFM)]]></SQL>'
-end;
+IF EXISTS(SELECT * FROM sys.objects WHERE object_id = object_id(N'dbo.stp_COR_afterSQLMerge') AND type in (N'P', N'PC')) 
+BEGIN
+	EXECUTE dbo.stp_COR_afterSQLMerge '<SQL><![CDATA[0001_basicLink.sql"" in ""P:\COR_Basic\Release\V4\v404 (CAFM)]]></SQL>'
+END; 
 ");
 #endif
 
