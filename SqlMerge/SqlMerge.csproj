@@ -13,9 +13,5 @@
   <ItemGroup>
     <Content Include="icons\merge.ico" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="info\" />
-  </ItemGroup>
 	
 </Project>
