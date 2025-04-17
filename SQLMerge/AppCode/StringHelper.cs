@@ -1,5 +1,5 @@
 ﻿
-namespace SQLMerge
+namespace SqlMerge
 {
 
 

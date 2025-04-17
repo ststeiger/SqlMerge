@@ -1,5 +1,5 @@
 ﻿
-namespace SQLMerge
+namespace SqlMerge
 {
 
 
@@ -174,14 +174,14 @@ namespace SQLMerge
         } // End Function GetSqlFilesSorted
 
 
-        // SQLMerge.FileHelper.GetSqlFiles(@"");
+        // SqlMerge.FileHelper.GetSqlFiles(@"");
         internal static System.IO.FileInfo[] GetSqlFiles(string searchFolder)
         {
             return GetSqlFiles(searchFolder, System.IO.SearchOption.TopDirectoryOnly);
         } // End Function GetRasterImages
 
 
-        // SQLMerge.FileHelper.GetSqlFiles();
+        // SqlMerge.FileHelper.GetSqlFiles();
         internal static System.IO.FileInfo[] GetSqlFiles(string searchFolder, System.IO.SearchOption searchOption)
         {
             string[] filters = new string[] { "sql", "psql" };

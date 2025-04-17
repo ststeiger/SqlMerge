@@ -35,26 +35,21 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Analyzers.Japanese;
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte.Japanese;
 
 namespace UtfUnknown.Core.Probers.MultiByte.Japanese
 {
     public class EUCJPProber : CharsetProber
     {
         private CodingStateMachine codingSM;
-        private EUCJPContextAnalyser contextAnalyser;
-        private EUCJPDistributionAnalyser distributionAnalyser;
+        private UtfUnknown.Core.Analyzers.Japanese.EUCJPContextAnalyser contextAnalyser;
+        private UtfUnknown.Core.Analyzers.Japanese.EUCJPDistributionAnalyser distributionAnalyser;
         private byte[] lastChar = new byte[2];
 
         public EUCJPProber()
         {
-            codingSM = new CodingStateMachine(new EUCJPSMModel());
-            distributionAnalyser = new EUCJPDistributionAnalyser();
-            contextAnalyser = new EUCJPContextAnalyser();
+            codingSM = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Japanese.EUCJPSMModel());
+            distributionAnalyser = new UtfUnknown.Core.Analyzers.Japanese.EUCJPDistributionAnalyser();
+            contextAnalyser = new UtfUnknown.Core.Analyzers.Japanese.EUCJPContextAnalyser();
             Reset();
         }
 
@@ -71,17 +66,17 @@ namespace UtfUnknown.Core.Probers.MultiByte.Japanese
             for (int i = offset; i < max; i++)
             {
                 codingState = codingSM.NextState(buf[i]);
-                if (codingState == StateMachineModel.ERROR)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)
                 {
                     state = ProbingState.NotMe;
                     break;
                 }
-                if (codingState == StateMachineModel.ITSME)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME)
                 {
                     state = ProbingState.FoundIt;
                     break;
                 }
-                if (codingState == StateMachineModel.START)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.START)
                 {
                     int charLen = codingSM.CurrentCharLen;
                     if (i == offset)
@@ -115,7 +110,7 @@ namespace UtfUnknown.Core.Probers.MultiByte.Japanese
             distributionAnalyser.Reset();
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             float contxtCf = contextAnalyser.GetConfidence();
             float distribCf = distributionAnalyser.GetConfidence();

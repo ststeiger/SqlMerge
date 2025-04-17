@@ -1,4 +1,3 @@
-using UtfUnknown.Core.Analyzers;
 
 namespace UtfUnknown.Core.Analyzers.Korean
 {

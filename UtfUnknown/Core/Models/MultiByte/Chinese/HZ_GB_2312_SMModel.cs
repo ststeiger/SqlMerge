@@ -37,7 +37,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 //Escaped charsets state machines
-using UtfUnknown.Core.Models;
 
 namespace UtfUnknown.Core.Models.MultiByte.Chinese
 {

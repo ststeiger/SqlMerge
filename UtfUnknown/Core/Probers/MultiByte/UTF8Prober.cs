@@ -36,11 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte;
-
 namespace UtfUnknown.Core.Probers.MultiByte
 {
     public class UTF8Prober : CharsetProber
@@ -52,7 +47,7 @@ namespace UtfUnknown.Core.Probers.MultiByte
         public UTF8Prober()
         {
             numOfMBChar = 0;
-            codingSM = new CodingStateMachine(new UTF8_SMModel());
+            codingSM = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.UTF8_SMModel());
             Reset();
         }
 
@@ -74,22 +69,21 @@ namespace UtfUnknown.Core.Probers.MultiByte
 
             for (int i = offset; i < max; i++)
             {
+                int codingState = codingSM.NextState(buf[i]);
 
-                var codingState = codingSM.NextState(buf[i]);
-
-                if (codingState == StateMachineModel.ERROR)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)
                 {
                     state = ProbingState.NotMe;
                     break;
                 }
 
-                if (codingState == StateMachineModel.ITSME)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME)
                 {
                     state = ProbingState.FoundIt;
                     break;
                 }
 
-                if (codingState == StateMachineModel.START)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.START)
                 {
                     if (codingSM.CurrentCharLen >= 2)
                         numOfMBChar++;
@@ -103,7 +97,7 @@ namespace UtfUnknown.Core.Probers.MultiByte
             return state;
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             float unlike = 0.99f;
             float confidence;

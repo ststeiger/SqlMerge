@@ -36,7 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
 
 namespace UtfUnknown.Core.Models
 {   
@@ -102,7 +101,7 @@ namespace UtfUnknown.Core.Models
                 int freqCharCount,
                 float typicalPositiveRatio,
                 bool keepEnglishLetter,
-                String charsetName)
+                string charsetName)
         {
             this.charToOrderMap = charToOrderMap;
             this.precedenceMatrix = precedenceMatrix;

@@ -36,7 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
 
 namespace UtfUnknown.Core.Models
 {
@@ -69,7 +68,7 @@ namespace UtfUnknown.Core.Models
         public int ClassFactor { get; }
 
         public StateMachineModel(BitPackage classTable, int classFactor,
-            BitPackage stateTable, int[] charLenTable, String name)
+            BitPackage stateTable, int[] charLenTable, string name)
         {
             this.classTable = classTable;
             ClassFactor = classFactor;

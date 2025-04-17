@@ -40,7 +40,6 @@
 * and adjusted to language specific support.
 */
 
-using UtfUnknown.Core.Models;
 
 namespace UtfUnknown.Core.Models.SingleByte.Italian
 {

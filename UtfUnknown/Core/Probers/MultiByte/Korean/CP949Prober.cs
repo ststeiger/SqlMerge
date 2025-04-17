@@ -35,26 +35,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Analyzers.Korean;
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte.Korean;
-
 namespace UtfUnknown.Core.Probers.MultiByte.Korean
 {
     public class CP949Prober : CharsetProber
     {
         private CodingStateMachine codingSM;
-        private EUCKRDistributionAnalyser distributionAnalyser;
+        private UtfUnknown.Core.Analyzers.Korean.EUCKRDistributionAnalyser distributionAnalyser;
         private byte[] lastChar = new byte[2];
 
         public CP949Prober()
         {
-            codingSM = new CodingStateMachine(new CP949SMModel());
+            codingSM = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Korean.CP949SMModel());
             // NOTE: CP949 is a superset of EUC-KR, so the distribution should be
             //       not different.
-            distributionAnalyser = new EUCKRDistributionAnalyser();
+            distributionAnalyser = new UtfUnknown.Core.Analyzers.Korean.EUCKRDistributionAnalyser();
             Reset();
         }
 
@@ -71,19 +65,19 @@ namespace UtfUnknown.Core.Probers.MultiByte.Korean
             for (int i = offset; i < max; i++)
             {
                 codingState = codingSM.NextState(buf[i]);
-                if (codingState == StateMachineModel.ERROR)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)
                 {
                     state = ProbingState.NotMe;
                     break;
                 }
 
-                if (codingState == StateMachineModel.ITSME)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME)
                 {
                     state = ProbingState.FoundIt;
                     break;
                 }
 
-                if (codingState == StateMachineModel.START)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.START)
                 {
                     int charLen = codingSM.CurrentCharLen;
                     if (i == offset)
@@ -107,7 +101,7 @@ namespace UtfUnknown.Core.Probers.MultiByte.Korean
             return state;
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             return distributionAnalyser.GetConfidence();
         }

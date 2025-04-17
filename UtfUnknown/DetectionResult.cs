@@ -1,7 +1,4 @@
 
-using System.Collections.Generic;
-
-
 namespace UtfUnknown
 {
     /// <summary>
@@ -19,7 +16,7 @@ namespace UtfUnknown
         /// <summary>
         /// Multiple results
         /// </summary>
-        public DetectionResult(IList<DetectionDetail> details)
+        public DetectionResult(System.Collections.Generic.IList<DetectionDetail> details)
         {
             Details = details;
         }
@@ -30,7 +27,7 @@ namespace UtfUnknown
         /// <param name="detectionDetail"></param>
         public DetectionResult(DetectionDetail detectionDetail)
         {
-            Details = new List<DetectionDetail> { detectionDetail };
+            Details = new System.Collections.Generic.List<DetectionDetail> { detectionDetail };
         }
 
         /// <summary>
@@ -52,7 +49,7 @@ namespace UtfUnknown
         /// <summary>
         /// All results
         /// </summary>
-        public IList<DetectionDetail> Details { get; set; }
+        public System.Collections.Generic.IList<DetectionDetail> Details { get; set; }
 
         public override string ToString()
         {

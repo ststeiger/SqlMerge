@@ -36,24 +36,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Analyzers.Chinese;
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte.Chinese;
 
 namespace UtfUnknown.Core.Probers.MultiByte.Chinese
 {
     public class EUCTWProber : CharsetProber
     {
         private CodingStateMachine codingSM;
-        private EUCTWDistributionAnalyser distributionAnalyser;
+        private UtfUnknown.Core.Analyzers.Chinese.EUCTWDistributionAnalyser distributionAnalyser;
         private byte[] lastChar = new byte[2];
 
         public EUCTWProber()
         {
-            codingSM = new CodingStateMachine(new EUCTWSMModel());
-            distributionAnalyser = new EUCTWDistributionAnalyser();
+            codingSM = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Chinese.EUCTWSMModel());
+            distributionAnalyser = new UtfUnknown.Core.Analyzers.Chinese.EUCTWDistributionAnalyser();
             Reset();
         }
 
@@ -65,19 +60,19 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
             for (int i = 0; i < max; i++)
             {
                 codingState = codingSM.NextState(buf[i]);
-                if (codingState == StateMachineModel.ERROR)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)
                 {
                     state = ProbingState.NotMe;
                     break;
                 }
 
-                if (codingState == StateMachineModel.ITSME)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME)
                 {
                     state = ProbingState.FoundIt;
                     break;
                 }
 
-                if (codingState == StateMachineModel.START)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.START)
                 {
                     int charLen = codingSM.CurrentCharLen;
                     if (i == offset)
@@ -113,7 +108,7 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
             distributionAnalyser.Reset();
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             return distributionAnalyser.GetConfidence();
         }

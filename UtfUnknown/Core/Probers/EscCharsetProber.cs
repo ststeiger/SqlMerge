@@ -35,13 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte.Chinese;
-using UtfUnknown.Core.Models.MultiByte.Japanese;
-using UtfUnknown.Core.Models.MultiByte.Korean;
-
 namespace UtfUnknown.Core.Probers
 {
     public class EscCharsetProber : CharsetProber
@@ -54,10 +47,10 @@ namespace UtfUnknown.Core.Probers
         public EscCharsetProber()
         {
             codingSM = new CodingStateMachine[CHARSETS_NUM]; 
-            codingSM[0] = new CodingStateMachine(new HZ_GB_2312_SMModel());
-            codingSM[1] = new CodingStateMachine(new Iso_2022_CN_SMModel());
-            codingSM[2] = new CodingStateMachine(new Iso_2022_JP_SMModel());
-            codingSM[3] = new CodingStateMachine(new Iso_2022_KR_SMModel());
+            codingSM[0] = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Chinese.HZ_GB_2312_SMModel());
+            codingSM[1] = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Chinese.Iso_2022_CN_SMModel());
+            codingSM[2] = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Japanese.Iso_2022_JP_SMModel());
+            codingSM[3] = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Korean.Iso_2022_KR_SMModel());
             Reset();
         }
         
@@ -78,7 +71,7 @@ namespace UtfUnknown.Core.Probers
                 for (int j = activeSM - 1; j >= 0; j--) {
                     // byte is feed to all active state machine
                     int codingState = codingSM[j].NextState(buf[i]);
-                    if (codingState == StateMachineModel.ERROR)  {
+                    if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)  {
                         // got negative answer for this state machine, make it inactive
                         activeSM--;
                         if (activeSM == 0) {
@@ -89,7 +82,7 @@ namespace UtfUnknown.Core.Probers
                             codingSM[activeSM] = codingSM[j];
                             codingSM[j] = t;
                         }
-                    } else if (codingState == StateMachineModel.ITSME) {
+                    } else if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME) {
                         state = ProbingState.FoundIt;
                         detectedCharset = codingSM[j].ModelName;
                         return state;
@@ -104,7 +97,7 @@ namespace UtfUnknown.Core.Probers
             return detectedCharset;        
         }
         
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             return 0.99f;
         }           

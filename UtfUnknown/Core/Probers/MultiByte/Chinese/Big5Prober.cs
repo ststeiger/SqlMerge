@@ -36,25 +36,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Analyzers.Chinese;
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte.Chinese;
-
 namespace UtfUnknown.Core.Probers.MultiByte.Chinese
 {
     public class Big5Prober : CharsetProber
     {
         //void GetDistribution(PRUint32 aCharLen, const char* aStr);
         private CodingStateMachine codingSM;
-        private BIG5DistributionAnalyser distributionAnalyser;
+        private UtfUnknown.Core.Analyzers.Chinese.BIG5DistributionAnalyser distributionAnalyser;
         private byte[] lastChar = new byte[2];
 
         public Big5Prober()
         {
-            codingSM = new CodingStateMachine(new BIG5SMModel());
-            distributionAnalyser = new BIG5DistributionAnalyser();
+            codingSM = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Chinese.BIG5SMModel());
+            distributionAnalyser = new UtfUnknown.Core.Analyzers.Chinese.BIG5DistributionAnalyser();
             Reset();
         }
 
@@ -64,18 +58,18 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
 
             for (int i = offset; i < max; i++)
             {
-                var codingState = codingSM.NextState(buf[i]);
-                if (codingState == StateMachineModel.ERROR)
+                int codingState = codingSM.NextState(buf[i]);
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)
                 {
                     state = ProbingState.NotMe;
                     break;
                 }
-                if (codingState == StateMachineModel.ITSME)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME)
                 {
                     state = ProbingState.FoundIt;
                     break;
                 }
-                if (codingState == StateMachineModel.START)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.START)
                 {
                     int charLen = codingSM.CurrentCharLen;
                     if (i == offset)
@@ -111,7 +105,7 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
             return CodepageName.BIG5;
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             return distributionAnalyser.GetConfidence();
         }

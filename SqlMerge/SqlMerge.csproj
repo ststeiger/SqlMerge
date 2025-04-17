@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>icons\merge.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <Import Project="..\UtfUnknown\UtfUnknown.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <Content Include="icons\merge.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="info\" />
+  </ItemGroup>
+	
+</Project>

@@ -37,8 +37,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using UtfUnknown.Core.Models;
-
 namespace UtfUnknown.Core.Probers
 {
     /// <summary>
@@ -47,13 +45,13 @@ namespace UtfUnknown.Core.Probers
     public class CodingStateMachine
     {
         private int currentState;
-        private StateMachineModel model;
+        private UtfUnknown.Core.Models.StateMachineModel model;
         private int currentCharLen;
         
         
-        public CodingStateMachine(StateMachineModel model) 
+        public CodingStateMachine(UtfUnknown.Core.Models.StateMachineModel model) 
         {
-            currentState = StateMachineModel.START;
+            currentState = UtfUnknown.Core.Models.StateMachineModel.START;
             this.model = model;
         }
 
@@ -62,7 +60,7 @@ namespace UtfUnknown.Core.Probers
             // for each byte we get its class, if it is first byte, 
             // we also get byte length
             int byteCls = model.GetClass(b);
-            if (currentState == StateMachineModel.START) { 
+            if (currentState == UtfUnknown.Core.Models.StateMachineModel.START) { 
                 
                 currentCharLen = model.charLenTable[byteCls];
             }
@@ -76,7 +74,7 @@ namespace UtfUnknown.Core.Probers
   
         public void Reset() 
         { 
-            currentState = StateMachineModel.START; 
+            currentState = UtfUnknown.Core.Models.StateMachineModel.START; 
         }
 
         public int CurrentCharLen 

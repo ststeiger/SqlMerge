@@ -36,11 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.Text;
-
-using UtfUnknown.Core.Analyzers.Chinese;
-using UtfUnknown.Core.Models;
-using UtfUnknown.Core.Models.MultiByte.Chinese;
 
 namespace UtfUnknown.Core.Probers.MultiByte.Chinese
 {
@@ -48,14 +43,14 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
     public class GB18030Prober : CharsetProber
     {
         private CodingStateMachine codingSM;
-        private GB18030DistributionAnalyser analyser;
+        private UtfUnknown.Core.Analyzers.Chinese.GB18030DistributionAnalyser analyser;
         private byte[] lastChar;
 
         public GB18030Prober()
         {
             lastChar = new byte[2];
-            codingSM = new CodingStateMachine(new GB18030_SMModel());
-            analyser = new GB18030DistributionAnalyser();
+            codingSM = new CodingStateMachine(new UtfUnknown.Core.Models.MultiByte.Chinese.GB18030_SMModel());
+            analyser = new UtfUnknown.Core.Analyzers.Chinese.GB18030DistributionAnalyser();
             Reset();
         }
 
@@ -70,21 +65,21 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
 
             for (int i = offset; i < max; i++)
             {
-                var codingState = codingSM.NextState(buf[i]);
+                int codingState = codingSM.NextState(buf[i]);
 
-                if (codingState == StateMachineModel.ERROR)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ERROR)
                 {
                     state = ProbingState.NotMe;
                     break;
                 }
 
-                if (codingState == StateMachineModel.ITSME)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.ITSME)
                 {
                     state = ProbingState.FoundIt;
                     break;
                 }
 
-                if (codingState == StateMachineModel.START)
+                if (codingState == UtfUnknown.Core.Models.StateMachineModel.START)
                 {
                     int charLen = codingSM.CurrentCharLen;
                     if (i == offset)
@@ -110,7 +105,7 @@ namespace UtfUnknown.Core.Probers.MultiByte.Chinese
             return state;
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             return analyser.GetConfidence();
         }

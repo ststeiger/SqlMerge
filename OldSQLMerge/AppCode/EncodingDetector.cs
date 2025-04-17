@@ -1,27 +1,24 @@
-using System;
-using System.IO;
-using System.Text;
 
 namespace SQLMerge.Core.Utilities
 {
     public static class EncodingDetector
     {
-        public static Encoding DetectOrGuessEncoding(string filePath)
+        public static System.Text.Encoding DetectOrGuessEncoding(string filePath)
         {
             // Read the first 4096 bytes of the file
             byte[] buffer = new byte[4096];
-            using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
             {
                 fs.Read(buffer, 0, buffer.Length);
             }
 
             // Check for BOM
             if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
-                return Encoding.UTF8;
+                return System.Text.Encoding.UTF8;
             if (buffer[0] == 0xFF && buffer[1] == 0xFE)
-                return Encoding.Unicode;
+                return System.Text.Encoding.Unicode;
             if (buffer[0] == 0xFE && buffer[1] == 0xFF)
-                return Encoding.BigEndianUnicode;
+                return System.Text.Encoding.BigEndianUnicode;
 
             // Try to detect encoding based on content
             bool hasNullBytes = false;
@@ -39,13 +36,13 @@ namespace SQLMerge.Core.Utilities
             }
 
             if (hasNullBytes)
-                return Encoding.Unicode;
+                return System.Text.Encoding.Unicode;
             if (hasHighBytes && !hasLowBytes)
-                return Encoding.UTF8;
+                return System.Text.Encoding.UTF8;
             if (hasHighBytes && hasLowBytes)
-                return Encoding.GetEncoding(1252); // Windows-1252
+                return System.Text.Encoding.GetEncoding(1252); // Windows-1252
 
-            return Encoding.UTF8; // Default to UTF-8
+            return System.Text.Encoding.UTF8; // Default to UTF-8
         }
     }
 } 

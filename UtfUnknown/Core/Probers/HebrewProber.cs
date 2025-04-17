@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-using System.Text;
 
 /*
  * General ideas of the Hebrew charset recognition
@@ -292,14 +290,14 @@ namespace UtfUnknown.Core.Probers
 
         public override string DumpStatus()
         {
-            StringBuilder status = new StringBuilder();
+            System.Text.StringBuilder status = new System.Text.StringBuilder();
 
             status.AppendLine($"  HEB: {finalCharLogicalScore} - {finalCharVisualScore} [Logical-Visual score]");
 
             return status.ToString();
         }
         
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         { 
             return 0.0f;
         }

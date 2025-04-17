@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-using System.Text;
 
 namespace UtfUnknown.Core.Probers
 {
@@ -151,7 +149,7 @@ namespace UtfUnknown.Core.Probers
             return state;
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             if (state == ProbingState.NotMe)
                 return 0.01f;
@@ -180,7 +178,7 @@ namespace UtfUnknown.Core.Probers
 
         public override string DumpStatus()
         {
-            StringBuilder status = new StringBuilder();
+            System.Text.StringBuilder status = new System.Text.StringBuilder();
 
             status.AppendLine($" Latin1Prober: {GetConfidence()} [{GetCharsetName()}]");
 

@@ -36,13 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-using System.Text;
-
-using UtfUnknown.Core.Probers.MultiByte;
-using UtfUnknown.Core.Probers.MultiByte.Chinese;
-using UtfUnknown.Core.Probers.MultiByte.Japanese;
-using UtfUnknown.Core.Probers.MultiByte.Korean;
 
 namespace UtfUnknown.Core.Probers
 {
@@ -60,14 +53,14 @@ namespace UtfUnknown.Core.Probers
 
         public MBCSGroupProber()
         {
-            probers[0] = new UTF8Prober();
-            probers[1] = new SJISProber();
-            probers[2] = new EUCJPProber();
-            probers[3] = new GB18030Prober();
-            probers[4] = new EUCKRProber();
-            probers[5] = new CP949Prober();
-            probers[6] = new Big5Prober();
-            probers[7] = new EUCTWProber();
+            probers[0] = new UtfUnknown.Core.Probers.MultiByte.UTF8Prober();
+            probers[1] = new UtfUnknown.Core.Probers.MultiByte.Japanese.SJISProber();
+            probers[2] = new UtfUnknown.Core.Probers.MultiByte.Japanese.EUCJPProber();
+            probers[3] = new UtfUnknown.Core.Probers.MultiByte.Chinese.GB18030Prober();
+            probers[4] = new UtfUnknown.Core.Probers.MultiByte.Korean.EUCKRProber();
+            probers[5] = new UtfUnknown.Core.Probers.MultiByte.Korean.CP949Prober();
+            probers[6] = new UtfUnknown.Core.Probers.MultiByte.Chinese.Big5Prober();
+            probers[7] = new UtfUnknown.Core.Probers.MultiByte.Chinese.EUCTWProber();
 
             Reset();
         }
@@ -138,7 +131,7 @@ namespace UtfUnknown.Core.Probers
             {
                 if (isActive[i])
                 {
-                    var st = probers[i].HandleData(highbyteBuf, 0, hptr);
+                    ProbingState st = probers[i].HandleData(highbyteBuf, 0, hptr);
                     if (st == ProbingState.FoundIt)
                     {
                         bestGuess = i;
@@ -161,7 +154,7 @@ namespace UtfUnknown.Core.Probers
             return state;
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             float bestConf = 0.0f;
 
@@ -184,7 +177,7 @@ namespace UtfUnknown.Core.Probers
                     {
                         if (isActive[i])
                         {
-                            var cf = probers[i].GetConfidence();
+                            float cf = probers[i].GetConfidence();
                             if (bestConf < cf)
                             {
                                 bestConf = cf;
@@ -211,7 +204,7 @@ namespace UtfUnknown.Core.Probers
 
         public override string DumpStatus()
         {
-            StringBuilder status = new StringBuilder();
+            System.Text.StringBuilder status = new System.Text.StringBuilder();
 
             float cf = GetConfidence(status);
 
@@ -227,7 +220,7 @@ namespace UtfUnknown.Core.Probers
                     }
                     else
                     {
-                        var cfp = probers[i].GetConfidence();
+                        float cfp = probers[i].GetConfidence();
 
                         status.AppendLine($" MBCS {cfp}: [{probers[i].GetCharsetName()}]");
 

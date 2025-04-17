@@ -18,7 +18,7 @@
 
 
 // Subtext.Scripting from Subtext\Subtext.Scripting\ScriptSplitter.cs
-namespace SQLMerge
+namespace SqlMerge
 {
 
     

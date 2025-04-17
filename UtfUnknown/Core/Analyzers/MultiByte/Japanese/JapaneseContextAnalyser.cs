@@ -180,7 +180,7 @@ namespace UtfUnknown.Core.Analyzers.Japanese
             // is complete, but since a character will not make much difference,
             // skipping it will simplify our logic and improve performance.
             for (int i = needToSkipCharNum+offset; i < max; ) {
-                int order = GetOrder(buf, i, out var charLen);
+                int order = GetOrder(buf, i, out int charLen);
                 i += charLen;
                 if (i > max) {
                     needToSkipCharNum = i - max;

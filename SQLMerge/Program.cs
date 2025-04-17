@@ -2,8 +2,6 @@
 namespace SqlMerge
 {
 
-    using SQLMerge;
-
 
     internal class Program
     {
@@ -12,10 +10,10 @@ namespace SqlMerge
         // https://github.com/AutoItConsulting/text-encoding-detect/blob/master/TextEncodingDetect-C%23/TextEncodingDetect/TextEncodingDetect.cs
         public static async System.Threading.Tasks.Task<int> Main(string[] args)
         {
-            // Test();
+            // BadMerge.TestEncodingQuirks();
             // Example.Test();
-            // Merge();
-            NewMerge();
+            // BadMerge.Merge();
+            await NewMerge();
 
             await System.Console.Out.WriteLineAsync(System.Environment.NewLine);
             await System.Console.Out.WriteLineAsync(" --- Press any key to continue --- ");

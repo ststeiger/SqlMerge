@@ -1,5 +1,5 @@
 ﻿
-namespace SQLMerge.Old
+namespace SqlMerge.Old
 {
 
 

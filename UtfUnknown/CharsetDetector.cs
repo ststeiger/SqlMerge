@@ -37,14 +37,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-
-using UtfUnknown.Core;
-using UtfUnknown.Core.Probers;
-
-
 namespace UtfUnknown
 {
     /// <summary>
@@ -53,7 +45,7 @@ namespace UtfUnknown
     /// </summary>                
     public class CharsetDetector
     {
-        internal InputState InputState;
+        internal UtfUnknown.Core.InputState InputState;
 
         /// <summary>
         /// Start of the file
@@ -78,26 +70,26 @@ namespace UtfUnknown
         /// <summary>
         /// "list" of probers
         /// </summary>
-        private IList<CharsetProber> _charsetProbers;
+        private System.Collections.Generic.IList<UtfUnknown.Core.Probers.CharsetProber> _charsetProbers;
 
         /// <summary>
         /// TODO unknown
         /// </summary>
-        private IList<CharsetProber> _escCharsetProber;
+        private System.Collections.Generic.IList<UtfUnknown.Core.Probers.CharsetProber> _escCharsetProber;
 
-        private IList<CharsetProber> CharsetProbers
+        private System.Collections.Generic.IList<UtfUnknown.Core.Probers.CharsetProber> CharsetProbers
         {
             get
             {
                 switch (InputState)
                 {
-                    case InputState.EscASCII:
+                    case UtfUnknown.Core.InputState.EscASCII:
                         return _escCharsetProber;
-                    case InputState.Highbyte:
+                    case UtfUnknown.Core.InputState.Highbyte:
                         return _charsetProbers;
                     default:
                         // pure ascii
-                        return new List<CharsetProber>();
+                        return new System.Collections.Generic.List<UtfUnknown.Core.Probers.CharsetProber>();
                 }
             }
         }
@@ -112,7 +104,7 @@ namespace UtfUnknown
         private CharsetDetector()
         {
             _start = true;
-            InputState = InputState.PureASCII;
+            InputState = UtfUnknown.Core.InputState.PureASCII;
             _lastChar = 0x00;
         }
 
@@ -126,10 +118,10 @@ namespace UtfUnknown
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException(nameof(bytes));
+                throw new System.ArgumentNullException(nameof(bytes));
             }
 
-            var detector = new CharsetDetector();
+            CharsetDetector detector = new CharsetDetector();
             detector.Feed(bytes, 0, bytes.Length);
             return detector.DataEnd();
         }
@@ -146,22 +138,22 @@ namespace UtfUnknown
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException(nameof(bytes));
+                throw new System.ArgumentNullException(nameof(bytes));
             }
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(offset));
+                throw new System.ArgumentOutOfRangeException(nameof(offset));
             }
             if (len < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(len));
+                throw new System.ArgumentOutOfRangeException(nameof(len));
             }
             if (bytes.Length < offset + len)
             {
-                throw new ArgumentException($"{nameof(len)} is greater than the number of bytes from {nameof(offset)} to the end of the array.");
+                throw new System.ArgumentException($"{nameof(len)} is greater than the number of bytes from {nameof(offset)} to the end of the array.");
             }
 
-            var detector = new CharsetDetector();
+            CharsetDetector detector = new CharsetDetector();
             detector.Feed(bytes, offset, len);
             return detector.DataEnd();
         }
@@ -174,11 +166,11 @@ namespace UtfUnknown
         /// Note: stream position is not reset before and after.
         /// </summary>
         /// <param name="stream">The steam. </param>
-        public static DetectionResult DetectFromStream(Stream stream)
+        public static DetectionResult DetectFromStream(System.IO.Stream stream)
         {
             if (stream == null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new System.ArgumentNullException(nameof(stream));
             }
 
             return DetectFromStream(stream, null);
@@ -192,32 +184,32 @@ namespace UtfUnknown
         /// <param name="stream">The steam. </param>
         /// <param name="maxBytesToRead">max bytes to read from <paramref name="stream"/>. If <c>null</c>, then no max</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxBytesToRead"/> 0 or lower.</exception>
-        public static DetectionResult DetectFromStream(Stream stream, long? maxBytesToRead)
+        public static DetectionResult DetectFromStream(System.IO.Stream stream, long? maxBytesToRead)
         {
             if (stream == null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new System.ArgumentNullException(nameof(stream));
             }
 
             if (maxBytesToRead <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(maxBytesToRead));
+                throw new System.ArgumentOutOfRangeException(nameof(maxBytesToRead));
             }
 
-            var detector = new CharsetDetector();
+            CharsetDetector detector = new CharsetDetector();
 
             ReadStream(stream, maxBytesToRead, detector);
             return detector.DataEnd();
         }
 
-        private static void ReadStream(Stream stream, long? maxBytes, CharsetDetector detector)
+        private static void ReadStream(System.IO.Stream stream, long? maxBytes, CharsetDetector detector)
         {
             const int bufferSize = 1024;
             byte[] buff = new byte[bufferSize];
             int read;
             long readTotal = 0;
 
-            var toRead = CalcToRead(maxBytes, readTotal, bufferSize);
+            int toRead = CalcToRead(maxBytes, readTotal, bufferSize);
 
             while ((read = stream.Read(buff, 0, toRead)) > 0)
             {
@@ -245,7 +237,7 @@ namespace UtfUnknown
         {
             if (readTotal + bufferSize > maxBytes)
             {
-                var calcToRead = (int)maxBytes - (int)readTotal;
+                int calcToRead = (int)maxBytes - (int)readTotal;
                 return calcToRead;
             }
 
@@ -261,10 +253,10 @@ namespace UtfUnknown
         {
             if (filePath == null)
             {
-                throw new ArgumentNullException(nameof(filePath));
+                throw new System.ArgumentNullException(nameof(filePath));
             }
 
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
             {
                 return DetectFromStream(fs);
             }
@@ -274,14 +266,14 @@ namespace UtfUnknown
         /// </summary>
         /// <param name="file">The file</param>
         /// <returns></returns>
-        public static DetectionResult DetectFromFile(FileInfo file)
+        public static DetectionResult DetectFromFile(System.IO.FileInfo file)
         {
             if (file == null)
             {
-                throw new ArgumentNullException(nameof(file));
+                throw new System.ArgumentNullException(nameof(file));
             }
 
-            using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (System.IO.FileStream fs = new System.IO.FileStream(file.FullName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
             {
                 return DetectFromStream(fs);
             }
@@ -309,7 +301,7 @@ namespace UtfUnknown
             }
 
             FindInputState(buf, offset, len);
-            foreach (var prober in CharsetProbers)
+            foreach (Core.Probers.CharsetProber prober in CharsetProbers)
             {
                 _done = RunProber(buf, offset, len, prober);
                 if (_done)
@@ -319,7 +311,7 @@ namespace UtfUnknown
 
         private bool IsStartsWithBom(byte[] buf, int offset, int len)
         {
-            var bomSet = FindCharSetByBom(buf, offset, len);
+            string bomSet = FindCharSetByBom(buf, offset, len);
             if (bomSet != null)
             {
                 _detectionDetail = new DetectionDetail(bomSet, 1.0f);
@@ -328,10 +320,10 @@ namespace UtfUnknown
             return false;
         }
 
-        private bool RunProber(byte[] buf, int offset, int len, CharsetProber charsetProber)
+        private bool RunProber(byte[] buf, int offset, int len, UtfUnknown.Core.Probers.CharsetProber charsetProber)
         {
-            var probingState = charsetProber.HandleData(buf, offset, len);
-            if (probingState == ProbingState.FoundIt)
+            Core.Probers.ProbingState probingState = charsetProber.HandleData(buf, offset, len);
+            if (probingState == UtfUnknown.Core.Probers.ProbingState.FoundIt)
             {
                 _detectionDetail = new DetectionDetail(charsetProber);
                 return true;
@@ -347,9 +339,9 @@ namespace UtfUnknown
                 if ((buf[i] & 0x80) != 0 && buf[i] != 0xA0)
                 {
                     // we got a non-ascii byte (high-byte)
-                    if (InputState != InputState.Highbyte)
+                    if (InputState != UtfUnknown.Core.InputState.Highbyte)
                     {
-                        InputState = InputState.Highbyte;
+                        InputState = UtfUnknown.Core.InputState.Highbyte;
 
                         // kill EscCharsetProber if it is active
                         _escCharsetProber = null;
@@ -358,11 +350,11 @@ namespace UtfUnknown
                 }
                 else
                 {
-                    if (InputState == InputState.PureASCII &&
+                    if (InputState == UtfUnknown.Core.InputState.PureASCII &&
                         (buf[i] == 0x1B || (buf[i] == 0x7B && _lastChar == 0x7E)))
                     {
                         // found escape character or HZ "~{"
-                        InputState = InputState.EscASCII;
+                        InputState = UtfUnknown.Core.InputState.EscASCII;
                         _escCharsetProber = _escCharsetProber ?? GetNewProbers();
                     }
                     _lastChar = buf[i];
@@ -375,31 +367,31 @@ namespace UtfUnknown
             if (len < 2)
                 return null;
 
-            var buf0 = buf[offset + 0];
-            var buf1 = buf[offset + 1];
+            byte buf0 = buf[offset + 0];
+            byte buf1 = buf[offset + 1];
 
             if (buf0 == 0xFE && buf1 == 0xFF)
             {
                 // FE FF 00 00  UCS-4, unusual octet order BOM (3412)
                 return len > 3
                         && buf[offset + 2] == 0x00 && buf[offset + 3] == 0x00
-                    ? CodepageName.X_ISO_10646_UCS_4_3412
-                    : CodepageName.UTF16_BE;
+                    ? UtfUnknown.Core.CodepageName.X_ISO_10646_UCS_4_3412
+                    : UtfUnknown.Core.CodepageName.UTF16_BE;
             }
 
             if (buf0 == 0xFF && buf1 == 0xFE)
             {
                 return len > 3
                        && buf[offset + 2] == 0x00 && buf[offset + 3] == 0x00
-                    ? CodepageName.UTF32_LE
-                    : CodepageName.UTF16_LE;
+                    ? UtfUnknown.Core.CodepageName.UTF32_LE
+                    : UtfUnknown.Core.CodepageName.UTF16_LE;
             }
 
             if (len < 3)
                 return null;
 
             if (buf0 == 0xEF && buf1 == 0xBB && buf[offset + 2] == 0xBF)
-                return CodepageName.UTF8;
+                return UtfUnknown.Core.CodepageName.UTF8;
             
             if (len < 4)
                 return null;
@@ -408,22 +400,22 @@ namespace UtfUnknown
             if (buf0 == 0x00 && buf1 == 0x00)
             {
                 if (buf[offset + 2] == 0xFE && buf[offset + 3] == 0xFF)
-                    return CodepageName.UTF32_BE;
+                    return UtfUnknown.Core.CodepageName.UTF32_BE;
 
                 // 00 00 FF FE  UCS-4, unusual octet order BOM (2143)
                 if (buf[offset + 2] == 0xFF && buf[offset + 3] == 0xFE)
-                    return CodepageName.X_ISO_10646_UCS_4_2143;
+                    return UtfUnknown.Core.CodepageName.X_ISO_10646_UCS_4_2143;
             }
 
             // Detect utf-7 with bom (see table in https://en.wikipedia.org/wiki/Byte_order_mark)
             if (buf0 == 0x2B && buf1 == 0x2F && buf[offset + 2] == 0x76)
                 if (buf[offset + 3] == 0x38 || buf[offset + 3] == 0x39 || buf[offset + 3] == 0x2B || buf[offset + 3] == 0x2F)
-                    return CodepageName.UTF7;
+                    return UtfUnknown.Core.CodepageName.UTF7;
             
             // Detect GB18030 with bom (see table in https://en.wikipedia.org/wiki/Byte_order_mark)
             // TODO: If you remove this check, GB18030Prober will still be defined as GB18030 -- It's feature or bug?
             if (buf0 == 0x84 && buf1 == 0x31 && buf[offset + 2] == 0x95 && buf[offset + 3] == 0x33)
-                return CodepageName.GB18030;
+                return UtfUnknown.Core.CodepageName.GB18030;
             
             return null;
         }
@@ -450,10 +442,10 @@ namespace UtfUnknown
                 return new DetectionResult(_detectionDetail);
             }
             
-            if (InputState == InputState.Highbyte)
+            if (InputState == UtfUnknown.Core.InputState.Highbyte)
             {
-                List<DetectionDetail> detectionResults = new List<DetectionDetail>();
-                foreach (CharsetProber thisCharsetProber in _charsetProbers)
+                System.Collections.Generic.List<DetectionDetail> detectionResults = new System.Collections.Generic.List<DetectionDetail>();
+                foreach (UtfUnknown.Core.Probers.CharsetProber thisCharsetProber in _charsetProbers)
                 {
                     DetectionDetail ddet = new DetectionDetail(thisCharsetProber);
                     if(ddet.Confidence > MinimumThreshold)
@@ -470,33 +462,33 @@ namespace UtfUnknown
 
                 //TODO why done isn't true?
             }
-            else if (InputState == InputState.PureASCII)
+            else if (InputState == UtfUnknown.Core.InputState.PureASCII)
             {
                 //TODO why done isn't true?
-                return new DetectionResult(new DetectionDetail(CodepageName.ASCII, 1.0f));
+                return new DetectionResult(new DetectionDetail(UtfUnknown.Core.CodepageName.ASCII, 1.0f));
             }
 
             return new DetectionResult();
         }
 
-        internal IList<CharsetProber> GetNewProbers()
+        internal System.Collections.Generic.IList<UtfUnknown.Core.Probers.CharsetProber> GetNewProbers()
         {
             switch (InputState)
             {
-                case InputState.EscASCII:
-                    return new List<CharsetProber>() { new EscCharsetProber() };
+                case UtfUnknown.Core.InputState.EscASCII:
+                    return new System.Collections.Generic.List<UtfUnknown.Core.Probers.CharsetProber>() { new UtfUnknown.Core.Probers.EscCharsetProber() };
 
-                case InputState.Highbyte:
-                    return new List<CharsetProber>()
+                case UtfUnknown.Core.InputState.Highbyte:
+                    return new System.Collections.Generic.List<UtfUnknown.Core.Probers.CharsetProber>()
                     {
-                        new MBCSGroupProber(),
-                        new SBCSGroupProber(),
-                        new Latin1Prober(),
+                        new UtfUnknown.Core.Probers.MBCSGroupProber(),
+                        new UtfUnknown.Core.Probers.SBCSGroupProber(),
+                        new UtfUnknown.Core.Probers.Latin1Prober(),
                     };
 
                 default:
                     // pure ascii
-                    return new List<CharsetProber>();
+                    return new System.Collections.Generic.List<UtfUnknown.Core.Probers.CharsetProber>();
             }
         }
     }

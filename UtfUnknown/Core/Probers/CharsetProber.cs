@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System.IO;
-using System.Text;
 
 namespace UtfUnknown.Core.Probers
 {
@@ -74,7 +72,7 @@ namespace UtfUnknown.Core.Probers
 
         public abstract string GetCharsetName();
 
-        public abstract float GetConfidence(StringBuilder status = null);
+        public abstract float GetConfidence(System.Text.StringBuilder status = null);
 
         public virtual ProbingState GetState()
         {
@@ -102,7 +100,7 @@ namespace UtfUnknown.Core.Probers
         {
             byte[] result;
 
-            using (MemoryStream ms = new MemoryStream(buf.Length))
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buf.Length))
             {
                 bool meetMSB = false;
                 int max = offset + len;
@@ -148,7 +146,7 @@ namespace UtfUnknown.Core.Probers
         {
             byte[] result;
 
-            using (MemoryStream ms = new MemoryStream(buf.Length))
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buf.Length))
             {
 
                 bool inTag = false;

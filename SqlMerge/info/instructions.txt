@@ -1,0 +1,7 @@
+﻿
+-- In SSMS, go to Tools -> Options -> Designers -> Table and Database Designers -> Prevent saving changes that require table re-creation 
+-- Extras -> Optionen -> Designer -> Tabellen- und Datenbank-Designer -> Speicher von Änderungen verhindern, die die Neuerstellung der Tabelle erfordern 
+
+
+-- Extras -> Optionen -> Abfrageausführung -> Standardmässig neue Abfragen im SQLCMD-Modus öffnen 
+-- In SSMS, go to Tools -> Options -> Query Execution > By default, open new queries in SQLCMD mode.

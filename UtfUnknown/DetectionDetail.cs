@@ -1,18 +1,8 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using UtfUnknown.Core;
-using UtfUnknown.Core.Probers;
-
-[assembly: InternalsVisibleTo("UtfUnknown.Tests, PublicKey=" +
-"002400000480000094000000060200000024000052534131000400000100010029f6b4defac763" +
-"66721687460b44b7619e8e19a411f785279316fdae2f6965edfa4a460304fe8b4ed796d5356a1c" +
-"225131b9087983d9ff9530df9307eab17d88cd4f1005a45f6f35523445d1ff7323322f3060cffc" +
-"0d70d0cb1b4b7d46081bbead31844927aaadb0508b64bf298de5abe5ea5cca8b92490c961b7b75" +
-"13c2c2a9")]
+﻿
 namespace UtfUnknown
 {
+
+
     /// <summary>
     /// Detailed result of a detection
     /// </summary>
@@ -21,19 +11,19 @@ namespace UtfUnknown
         /// <summary>
         /// A dictionary for replace unsupported codepage name in .NET to the nearly identical version.
         /// </summary>
-        private static readonly Dictionary<string, string> FixedToSupportCodepageName =
-            new Dictionary<string, string>
+        private static readonly System.Collections.Generic.Dictionary<string, string> FixedToSupportCodepageName =
+            new System.Collections.Generic.Dictionary<string, string>
             {
                 // CP949 is superset of ks_c_5601-1987 (see https://github.com/CharsetDetector/UTF-unknown/pull/74#issuecomment-550362133)
-                {CodepageName.CP949, CodepageName.KS_C_5601_1987},
-                {CodepageName.ISO_2022_CN, CodepageName.X_CP50227},
+                {UtfUnknown.Core.CodepageName.CP949, UtfUnknown.Core.CodepageName.KS_C_5601_1987},
+                {UtfUnknown.Core.CodepageName.ISO_2022_CN, UtfUnknown.Core.CodepageName.X_CP50227},
             };
 
         /// <summary>
         /// New result
         /// </summary>
-        public DetectionDetail(string encodingShortName, float confidence, CharsetProber prober = null,
-            TimeSpan? time = null, string statusLog = null)
+        public DetectionDetail(string encodingShortName, float confidence, UtfUnknown.Core.Probers.CharsetProber prober = null,
+            System.TimeSpan? time = null, string statusLog = null)
         {
             EncodingName = encodingShortName;
             Confidence = confidence;
@@ -46,7 +36,7 @@ namespace UtfUnknown
         /// <summary>
         /// New Result
         /// </summary>
-        public DetectionDetail(CharsetProber prober, TimeSpan? time = null)
+        public DetectionDetail(UtfUnknown.Core.Probers.CharsetProber prober, System.TimeSpan? time = null)
             : this(prober.GetCharsetName(), prober.GetConfidence(), prober, time, prober.DumpStatus())
         {
         }
@@ -59,7 +49,7 @@ namespace UtfUnknown
         /// <summary>
         /// The detected encoding. 
         /// </summary>
-        public Encoding Encoding { get; set; }
+        public System.Text.Encoding Encoding { get; set; }
 
         /// <summary>
         /// The confidence of the found encoding. Between 0 and 1.
@@ -69,12 +59,12 @@ namespace UtfUnknown
         /// <summary>
         /// The used prober for detection
         /// </summary>
-        public CharsetProber Prober { get; set; }
+        public UtfUnknown.Core.Probers.CharsetProber Prober { get; set; }
 
         /// <summary>
         /// The time spend
         /// </summary>
-        public TimeSpan? Time { get; set; }
+        public System.TimeSpan? Time { get; set; }
 
         public string StatusLog { get; set; }
 
@@ -83,16 +73,16 @@ namespace UtfUnknown
             return $"Detected {EncodingName} with confidence of {Confidence}";
         }
 
-        internal static Encoding GetEncoding(string encodingShortName)
+        internal static System.Text.Encoding GetEncoding(string encodingShortName)
         {
-            var encodingName = FixedToSupportCodepageName.TryGetValue(encodingShortName, out var supportCodepageName)
+            string encodingName = FixedToSupportCodepageName.TryGetValue(encodingShortName, out string supportCodepageName)
                 ? supportCodepageName
                 : encodingShortName;
             try
             {
-                return Encoding.GetEncoding(encodingName);
+                return System.Text.Encoding.GetEncoding(encodingName);
             }
-            catch (ArgumentException) // unsupported name
+            catch (System.ArgumentException) // unsupported name
             {
 #if NETSTANDARD && !NETSTANDARD1_0 || NETCOREAPP3_0
                 return CodePagesEncodingProvider.Instance.GetEncoding(encodingName);

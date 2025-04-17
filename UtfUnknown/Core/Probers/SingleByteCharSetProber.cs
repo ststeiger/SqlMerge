@@ -36,10 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-using System.Text;
-
-using UtfUnknown.Core.Models;
 
 namespace UtfUnknown.Core.Probers
 {
@@ -55,7 +51,7 @@ namespace UtfUnknown.Core.Probers
         private const int NEUTRAL_CAT = NUMBER_OF_SEQ_CAT - 3;
         private const int NEGATIVE_CAT = 0;
         
-        protected SequenceModel model;
+        protected UtfUnknown.Core.Models.SequenceModel model;
         
         // true if we need to reverse every pair in the model lookup        
         bool reversed; 
@@ -75,13 +71,13 @@ namespace UtfUnknown.Core.Probers
         // Optional auxiliary prober for name decision. created and destroyed by the GroupProber
         CharsetProber nameProber; 
                     
-        public SingleByteCharSetProber(SequenceModel model) 
+        public SingleByteCharSetProber(UtfUnknown.Core.Models.SequenceModel model) 
             : this(model, false, null)
         {
             
         }
     
-        public SingleByteCharSetProber(SequenceModel model, bool reversed, 
+        public SingleByteCharSetProber(UtfUnknown.Core.Models.SequenceModel model, bool reversed, 
                                        CharsetProber nameProber)
         {
             this.model = model;
@@ -102,14 +98,14 @@ namespace UtfUnknown.Core.Probers
                 {
                     totalChar++;
                 }
-                else if (order == SequenceModel.ILL)
+                else if (order == UtfUnknown.Core.Models.SequenceModel.ILL)
                 {
                     // When encountering an illegal codepoint,
                     // no need to continue analyzing data
                     state = ProbingState.NotMe;
                     break;
                 }
-                else if (order == SequenceModel.CTR)
+                else if (order == UtfUnknown.Core.Models.SequenceModel.CTR)
                 {
                     ctrlChar++;
                 }
@@ -145,7 +141,7 @@ namespace UtfUnknown.Core.Probers
                 
         public override string DumpStatus()
         {
-            StringBuilder status = new StringBuilder();
+            System.Text.StringBuilder status = new System.Text.StringBuilder();
 
             status.AppendLine($"  SBCS: {GetConfidence():0.00############} [{GetCharsetName()}]");
 
@@ -154,10 +150,10 @@ namespace UtfUnknown.Core.Probers
 
         private void StringBuilder(string v1, float v2, string v3)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
-        public override float GetConfidence(StringBuilder status = null)
+        public override float GetConfidence(System.Text.StringBuilder status = null)
         {
             /*
             NEGATIVE_APPROACH
